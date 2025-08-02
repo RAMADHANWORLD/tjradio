@@ -1,0 +1,47 @@
+GITHUB PAGES DEPLOYMENT GUIDE
+================================
+
+FOLDER CONTENTS:
+- index.html (main website file)
+- assets/ folder (contains CSS and JavaScript files)
+- nojekyll.txt (rename to .nojekyll after upload)
+- This guide file
+
+DEPLOYMENT STEPS:
+
+1. CREATE GITHUB REPOSITORY
+   - Go to github.com and create new repository
+   - Make it PUBLIC (required for free GitHub Pages)
+   - Don't initialize with README
+
+2. UPLOAD ALL FILES
+   - Upload ALL files from this folder to your repository
+   - Make sure to upload the assets/ folder too
+   - After upload, rename "nojekyll.txt" to ".nojekyll" (with dot)
+
+3. ENABLE GITHUB PAGES
+   - Go to repository Settings
+   - Find "Pages" section on left sidebar
+   - Under "Source": select "Deploy from a branch"  
+   - Branch: select "main"
+   - Folder: select "/ (root)"
+   - Click "Save"
+
+4. ACCESS YOUR WEBSITE
+   - Your site will be at: https://yourusername.github.io/repository-name
+   - Wait 5-10 minutes for first deployment
+
+WEBSITE FEATURES:
+- Live radio streaming (97.0FM Crescent Radio)
+- 16 authentic presenter profiles with real photos
+- Complete weekly programming schedule
+- Modern responsive design
+- All authentic contact information
+
+TROUBLESHOOTING:
+- Make sure index.html is in the root folder
+- Make sure assets/ folder is uploaded
+- Make sure .nojekyll file exists (rename from nojekyll.txt)
+- Repository must be public for free GitHub Pages
+
+The website will work exactly like the original crescentradio.net with enhanced design!

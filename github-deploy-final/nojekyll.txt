@@ -1,0 +1,2 @@
+This file should be renamed to .nojekyll (with a dot at the beginning) after uploading to GitHub.
+This prevents Jekyll from processing your files on GitHub Pages.

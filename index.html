@@ -10,6 +10,7 @@
     <!-- Performance optimizations -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="dns-prefetch" href="//de1.api.radio-browser.info">
     <link rel="dns-prefetch" href="//fr1.api.radio-browser.info">
     <link rel="dns-prefetch" href="//nl1.api.radio-browser.info">
@@ -18,6 +19,7 @@
     <link rel="dns-prefetch" href="//www.highperformanceformat.com">
     
     <style>
+        /* --- [Original CSS styles remain untouched] --- */
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
         :root {
@@ -322,23 +324,29 @@
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
-            gap: 15px;
-            margin: 40px 0;
+            gap: 8px;
+            margin: 20px 0;
             animation: fadeInUp 1.6s ease-out;
+            padding: 10px 5px;
+            max-width: 100%;
         }
 
         .category-tab {
-            padding: 12px 25px;
+            padding: 6px 12px;
             background: var(--background-card);
             border: 2px solid var(--border-color);
-            border-radius: 25px;
+            border-radius: 15px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
             font-weight: 500;
-            font-size: 1em;
+            font-size: 0.8em;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             position: relative;
             overflow: hidden;
+            white-space: nowrap;
+            flex: 1 1 auto;
+            min-width: fit-content;
+            text-align: center;
         }
 
         .category-tab::before {
@@ -522,20 +530,90 @@
             animation: pulse 2s infinite;
         }
 
-        /* Enhanced Player */
+        /* --- [START] Beautiful Player CSS --- */
         #player-wrapper {
             position: fixed;
-            bottom: 90px;
+            bottom: 0;
             left: 0;
             width: 100%;
-            z-index: 1000;
-            border-top: none;
+            z-index: 1001; /* Above side ads */
+            padding: 0 15px 15px 15px;
+            background: transparent;
+            transition: transform 0.5s ease-in-out;
         }
 
-        /* High Quality Button Styles */
+        #player-wrapper.hidden {
+            transform: translateY(150%);
+        }
+
+        #player-container {
+            max-width: 980px; /* MODIFIED: Player width reduced */
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(18px) saturate(200%);
+            -webkit-backdrop-filter: blur(18px) saturate(200%);
+            border: 1px solid rgba(220, 220, 220, 0.5);
+            border-radius: 20px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            height: 90px;
+            box-shadow: 0 8px 32px 0 rgba(44, 62, 80, 0.2);
+        }
+        
+        #player-art-container {
+            flex-shrink: 0;
+        }
+
+        #player-art-container #station-logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        #player-art-container #station-logo.playing {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 15px var(--accent-color-glow);
+            animation: pulse 2s infinite;
+        }
+
+        #player-info-container {
+            flex-grow: 1;
+            min-width: 0; /* Important for flex-grow to work with ellipsis */
+            text-align: left;
+        }
+
+        #now-playing-text {
+            font-weight: 600;
+            font-size: 1.1em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--primary-text);
+        }
+
+        #now-playing-subtext {
+            font-size: 0.9em;
+            color: var(--secondary-text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        #player-controls-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+
         .control-button {
-            width: 80px;
-            height: 80px;
+            width: 50px;
+            height: 50px;
             border: none;
             border-radius: 50%;
             background: var(--accent-gradient);
@@ -548,38 +626,19 @@
             position: relative;
             overflow: hidden;
         }
-
-        .control-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(214, 161, 0, 0.4);
+        
+        #player-controls-container .control-button {
+            width: 50px;
+            height: 50px;
+            box-shadow: 0 4px 12px rgba(214, 161, 0, 0.3);
         }
 
-        .control-button:active {
-            transform: scale(0.95);
-        }
-
-        .control-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .control-button:hover::before {
-            left: 100%;
-        }
-
-        .control-button svg {
-            width: 36px;
-            height: 36px;
+        #player-controls-container .control-button svg {
+            width: 28px;  /* MODIFIED: Icon size increased */
+            height: 28px; /* MODIFIED: Icon size increased */
             fill: white;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
         }
-
+        
         #eq-toggle {
             background: linear-gradient(45deg, #667eea, #764ba2);
         }
@@ -587,71 +646,53 @@
         #eq-toggle:hover {
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
         }
-        
-        #player-container {
-            background: transparent;
-            backdrop-filter: none;
-            border-top: none;
-            padding: 25px 30px;
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            transition: all 0.4s ease;
-            height: 100px;
-            box-shadow: none;
+
+        .spinner {
+            width: 28px; /* MODIFIED: Spinner size increased to match icons */
+            height: 28px;/* MODIFIED: Spinner size increased to match icons */
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            display: none;
         }
 
-        #player-container:hover {
-            box-shadow: none;
-            border-top-color: transparent;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
+        
+        .control-button.loading .spinner { display: block; }
+        .control-button.loading svg { display: none !important; }
+
+        #volume-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 150px;
+            flex-shrink: 0;
+        }
+        
+        #volume-section svg {
+            fill: var(--secondary-text);
+            transition: fill 0.3s ease;
+        }
+        #volume-section:hover svg { fill: var(--primary-text); }
 
         #equalizer-container {
             position: absolute;
-            left: 0;
-            top: -140px;
-            width: 250px;
+            left: 50%;
+            transform: translateX(-50%);
+            bottom: 120px; /* Position above player */
+            width: 280px;
             background: var(--background-card);
             border: 3px solid var(--border-color);
-            border-radius: 12px 12px 0 0;
+            border-radius: 12px;
             padding: 20px;
             display: none;
             box-shadow: var(--shadow);
-            z-index: 1001;
+            z-index: -1;
         }
-
-        #now-playing-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-grow: 1;
-            min-width: 0;
-            margin-left: 120px;
-        }
-
-        #now-playing-info img {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
-            flex-shrink: 0;
-            transition: all 0.4s ease;
-            border: 3px solid var(--border-color);
-        }
-
-        #now-playing-info img.playing {
-            border-color: var(--accent-color);
-            box-shadow: 0 0 12px var(--accent-color-glow);
-            animation: pulse 2s infinite;
-        }
-
-        #now-playing-text {
-            font-weight: 600;
-            font-size: 1.2em;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            color: var(--primary-text);
-        }
+        /* --- [END] Beautiful Player CSS --- */
 
         /* Loading and Error States */
         .loading {
@@ -692,11 +733,14 @@
             .station-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
             .station-card { height: 220px; }
             #search-box { padding: 20px 30px 20px 50px; }
-            .category-tabs { gap: 10px; }
-            .category-tab { padding: 10px 20px; font-size: 0.9em; }
-            #now-playing-info { margin-left: 60px; }
-            #player-container { padding: 10px 15px; height: 60px; }
-            #app-container { padding: 15px; }
+            .category-tabs { gap: 6px; padding: 8px 3px; }
+            .category-tab { padding: 6px 10px; font-size: 0.75em; min-width: auto; flex: 1 1 auto; }
+            
+            #player-container { flex-wrap: wrap; height: auto; padding: 15px; }
+            #player-info-container { order: 1; flex-basis: calc(100% - 75px); }
+            #player-art-container { order: 2; }
+            #player-controls-container { order: 3; flex-grow: 1; justify-content: center; }
+            #volume-section { display: none; } /* Hide volume on smaller screens for simplicity */
         }
 
         @media (max-width: 480px) {
@@ -704,7 +748,8 @@
             .station-grid { grid-template-columns: 1fr; }
             body { padding-bottom: 160px; }
             .logo { width: 60px; height: 60px; font-size: 1.2em; }
-            .category-tabs { flex-direction: column; align-items: center; }
+            .category-tabs { gap: 4px; padding: 6px 2px; }
+            .category-tab { padding: 4px 8px; font-size: 0.7em; border-radius: 12px; }
         }
 
         /* Enhanced Button Styles */
@@ -748,6 +793,8 @@
 
         /* Volume and Equalizer Controls */
         .control-slider {
+            -webkit-appearance: none;
+            appearance: none;
             width: 100%;
             height: 6px;
             border-radius: 3px;
@@ -757,6 +804,7 @@
         }
 
         .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
             appearance: none;
             width: 18px;
             height: 18px;
@@ -766,8 +814,21 @@
             box-shadow: 0 2px 6px rgba(214, 161, 0, 0.3);
             transition: all 0.3s ease;
         }
+        .control-slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 6px rgba(214, 161, 0, 0.3);
+        }
 
         .control-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 10px rgba(214, 161, 0, 0.5);
+        }
+        .control-slider::-moz-range-thumb:hover {
             transform: scale(1.2);
             box-shadow: 0 4px 10px rgba(214, 161, 0, 0.5);
         }
@@ -792,9 +853,60 @@
             content: '📍';
             margin-right: 8px;
         }
+        
+        /* Styles for new Left/Right Ads */
+        #left-ad-container, #right-ad-container {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1001;
+            width: 160px;
+            height: 300px;
+        }
+        #left-ad-container {
+            left: 20px;
+        }
+        #right-ad-container {
+            right: 20px;
+        }
+
+        /* Hide side ads on smaller screens */
+        @media (max-width: 1800px) { /* Increased breakpoint for side ads */
+            #left-ad-container, #right-ad-container {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Left Side Ad -->
+    <div id="left-ad-container">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : 'ab57a227bcc4369acc8659d06593e497',
+                'format' : 'iframe',
+                'height' : 300,
+                'width' : 160,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/ab57a227bcc4369acc8659d06593e497/invoke.js" async defer></script>
+    </div>
+
+    <!-- Right Side Ad -->
+    <div id="right-ad-container">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : 'ab57a227bcc4369acc8659d06593e497',
+                'format' : 'iframe',
+                'height' : 300,
+                'width' : 160,
+                'params' : {}
+            };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/ab57a227bcc4369acc8659d06593e497/invoke.js" async defer></script>
+    </div>
+
     <!-- Top Advertisement -->
     <div id="top-ads" class="ads-container">
         <script type="text/javascript">
@@ -806,7 +918,7 @@
                 'params' : {}
             };
         </script>
-        <script type="text/javascript" src="//www.highperformanceformat.com/bbb39fa2df38b4031f13f19c6a9db940/invoke.js"></script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/bbb39fa2df38b4031f13f19c6a9db940/invoke.js" async defer></script>
     </div>
 
     <!-- Location Indicator -->
@@ -910,9 +1022,8 @@
     </div>
 
     <!-- Player Wrapper -->
-    <div id="player-wrapper" style="display: none;">
-        <!-- Player Advertisement -->
-        <div id="player-ads" class="ads-container">
+    <div id="player-wrapper" class="hidden">
+        <div id="player-ads" class="ads-container" style="max-width: 980px; margin: 0 auto 10px auto; padding: 0; text-align: center;">
             <script type="text/javascript">
                 atOptions = {
                     'key' : 'bbb39fa2df38b4031f13f19c6a9db940',
@@ -922,48 +1033,43 @@
                     'params' : {}
                 };
             </script>
-            <script type="text/javascript" src="//www.highperformanceformat.com/bbb39fa2df38b4031f13f19c6a9db940/invoke.js"></script>
+            <script type="text/javascript" src="//www.highperformanceformat.com/bbb39fa2df38b4031f13f19c6a9db940/invoke.js" async defer></script>
         </div>
 
         <div id="player-container">
-            <div id="equalizer-container">
+             <div id="equalizer-container">
                 <h4>Audio Equalizer</h4>
                 <label>Bass: <input type="range" class="control-slider" id="bass-slider" min="-10" max="10" value="0"></label><br>
                 <label>Mid: <input type="range" class="control-slider" id="mid-slider" min="-10" max="10" value="0"></label><br>
                 <label>Treble: <input type="range" class="control-slider" id="treble-slider" min="-10" max="10" value="0"></label><br>
             </div>
-
-            <button id="eq-toggle" class="control-button">
-                <svg viewBox="0 0 24 24">
-                    <path d="M7 18c-0.55 0-1-0.45-1-1V7c0-0.55 0.45-1 1-1s1 0.45 1 1v10c0 0.55-0.45 1-1 1zm4 4c-0.55 0-1-0.45-1-1V3c0-0.55 0.45-1 1-1s1 0.45 1 1v18c0 0.55-0.45 1-1 1zm4-8c-0.55 0-1-0.45-1-1V11c0-0.55 0.45-1 1-1s1 0.45 1 1v2c0 0.55-0.45 1-1 1zm4-4c-0.55 0-1-0.45-1-1V7c0-0.55 0.45-1 1-1s1 0.45 1 1v2c0 0.55-0.45 1-1 1z"/>
-                </svg>
-            </button>
-            <button id="play-pause" class="control-button">
-                <svg viewBox="0 0 24 24" id="play-icon">
-                    <path d="M8 6.82v10.36c0 0.79 0.87 1.27 1.54 0.84l8.14-5.18c0.62-0.39 0.62-1.29 0-1.68L9.54 5.98C8.87 5.55 8 6.03 8 6.82z"/>
-                </svg>
-                <svg viewBox="0 0 24 24" id="pause-icon" style="display: none;">
-                    <path d="M8 19c1.1 0 2-0.9 2-2V7c0-1.1-0.9-2-2-2s-2 0.9-2 2v10c0 1.1 0.9 2 2 2zm6-12v10c0 1.1 0.9 2 2 2s2-0.9 2-2V7c0-1.1-0.9-2-2-2s-2 0.9-2 2z"/>
-                </svg>
-            </button>
-            <div id="now-playing-info">
+            
+            <div id="player-art-container">
                 <img id="station-logo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiByeD0iMTAiIGZpbGw9IiNENkExMDAiLz4KPHN2ZyB4PSIxMCIgeT0iMTAiIHdpZHRoPSIzMCIgaGVpZ2h0PSIzMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJ3aGl0ZSI+CjxwYXRoIGQ9Ik0xMiAydjIwYzAgMS4xLS45IDItMiAycy0yLS45LTItMlY0YzAtMS4xLjktMiAyLTJzMiAuOSAyIDJ6bTYgNnYxMmMwIDEuMS0uOSAyLTIgMnMtMi0uOS0yLTJWOGMwLTEuMS45LTIgMi0ycy0uOSAyIDIgMnptLTEyIDR2OGMwIDEuMS0uOSAyLTIgMnMtMi0uOS0yLTJWMTJjMC0xLjEuOS0yIDItMnMyIC45IDIgMnoiLz4KPC9zdmc+Cjwvc3ZnPgo=" alt="Station Logo">
-                <div>
-                    <div id="now-playing-text">Select a station to start listening</div>
-                    <div id="volume-container" style="margin-top: 5px;">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#D6A100" style="vertical-align: middle; margin-right: 8px;">
-                            <path d="M3 10v4c0 0.55 0.45 1 1 1h3l3.29 3.29c0.63 0.63 1.71 0.18 1.71-0.71V6.41c0-0.89-1.08-1.34-1.71-0.71L7 9H4c-0.55 0-1 0.45-1 1zm13.5 2c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-0.73 2.5-2.25 2.5-4.02z"/>
-                        </svg>
-                        <input type="range" class="control-slider" id="volume-slider" min="0" max="100" value="50" style="width: 100px;">
-                    </div>
-                </div>
             </div>
-            <div id="player-controls">
-                <button id="stop-btn" class="control-button">
-                    <svg viewBox="0 0 24 24">
-                        <path d="M8 6h8c1.1 0 2 0.9 2 2v8c0 1.1-0.9 2-2 2H8c-1.1 0-2-0.9-2-2V8c0-1.1 0.9-2 2-2z"/>
-                    </svg>
+
+            <div id="player-info-container">
+                <div id="now-playing-text">Select a station to start</div>
+                <div id="now-playing-subtext">Your portal to world's audio</div>
+            </div>
+            
+            <div id="player-controls-container">
+                <button id="eq-toggle" class="control-button">
+                    <svg viewBox="0 0 24 24"><path d="M7 18c-0.55 0-1-0.45-1-1V7c0-0.55 0.45-1 1-1s1 0.45 1 1v10c0 0.55-0.45 1-1 1zm4 4c-0.55 0-1-0.45-1-1V3c0-0.55 0.45-1 1-1s1 0.45 1 1v18c0 0.55-0.45 1-1 1zm4-8c-0.55 0-1-0.45-1-1V11c0-0.55 0.45-1 1-1s1 0.45 1 1v2c0 0.55-0.45 1-1 1zm4-4c-0.55 0-1-0.45-1-1V7c0-0.55 0.45-1 1-1s1 0.45 1 1v2c0 0.55-0.45 1-1 1z"/></svg>
                 </button>
+                <button id="play-pause" class="control-button">
+                    <div class="spinner"></div>
+                    <svg viewBox="0 0 24 24" id="play-icon"><path d="M8 6.82v10.36c0 0.79 0.87 1.27 1.54 0.84l8.14-5.18c0.62-0.39 0.62-1.29 0-1.68L9.54 5.98C8.87 5.55 8 6.03 8 6.82z"/></svg>
+                    <svg viewBox="0 0 24 24" id="pause-icon" style="display: none;"><path d="M8 19c1.1 0 2-0.9 2-2V7c0-1.1-0.9-2-2-2s-2 0.9-2 2v10c0 1.1 0.9 2 2 2zm6-12v10c0 1.1 0.9 2 2 2s2-0.9 2-2V7c0-1.1-0.9-2-2-2s-2 0.9-2 2z"/></svg>
+                </button>
+                <button id="stop-btn" class="control-button">
+                    <svg viewBox="0 0 24 24"><path d="M8 6h8c1.1 0 2 0.9 2 2v8c0 1.1-0.9 2-2 2H8c-1.1 0-2-0.9-2-2V8c0-1.1 0.9-2 2-2z"/></svg>
+                </button>
+            </div>
+            
+            <div id="volume-section">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4c0 .55.45 1 1 1h3l3.29 3.29c.63.63 1.71.18 1.71-.71V6.41c0-.89-1.08-1.34-1.71-.71L7 9H4c-.55 0-1 .45-1 1zm13.5 2c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+                <input type="range" class="control-slider" id="volume-slider" min="0" max="1" step="0.01" value="0.5">
             </div>
         </div>
     </div>
@@ -979,23 +1085,31 @@
                 'params' : {}
             };
         </script>
-        <script type="text/javascript" src="//www.highperformanceformat.com/bbb39fa2df38b4031f13f19c6a9db940/invoke.js"></script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/bbb39fa2df38b4031f13f19c6a9db940/invoke.js" async defer></script>
+    </div>
+
+    <!-- Footer Links -->
+    <div style="text-align: center; padding: 40px 20px 20px 20px; position: relative; z-index: 1000;">
+        <a href="about.html" style="margin: 0 15px; color: var(--primary-text); text-decoration: none; font-weight: 500;">About</a>
+        <a href="privacy.html" style="margin: 0 15px; color: var(--primary-text); text-decoration: none; font-weight: 500;">Privacy</a>
+        <a href="contact.html" style="margin: 0 15px; color: var(--primary-text); text-decoration: none; font-weight: 500;">Contact</a>
     </div>
 
     <audio id="audio-player" preload="none"></audio>
 
     <script>
+        // --- [Original JavaScript Class 'RadioApp' remains untouched] ---
         class RadioApp {
             constructor() {
                 this.audio = document.getElementById('audio-player');
                 this.currentStation = null;
-                this.stations = [];
+                this.stations = {}; // Use an object for faster lookups by UUID
                 this.userLocation = { country: '', latitude: null, longitude: null };
                 this.currentCategory = 'all';
                 this.searchTimeout = null;
                 this.isPlaying = false;
-                this.isMuted = false;
                 this.stationsByCategory = {};
+                this.lastStation = this.getLastStation();
                 
                 this.init();
             }
@@ -1005,48 +1119,70 @@
                 this.setupEventListeners();
                 this.loadStations();
                 this.updateLocationIndicator();
+                this.restoreLastStation();
+            }
+
+            // localStorage methods for remembering last station
+            saveLastStation(station) {
+                try {
+                    localStorage.setItem('lastStation', JSON.stringify({
+                        stationuuid: station.stationuuid, // Save UUID to re-fetch full object
+                        name: station.name,
+                        url: station.url,
+                        country: station.country,
+                        favicon: station.favicon,
+                        tags: station.tags,
+                        savedAt: new Date().getTime()
+                    }));
+                } catch (error) {
+                    console.error('Could not save last station:', error);
+                }
+            }
+
+            getLastStation() {
+                try {
+                    const saved = localStorage.getItem('lastStation');
+                    if (saved) {
+                        const station = JSON.parse(saved);
+                        if (new Date().getTime() - station.savedAt < 7 * 24 * 60 * 60 * 1000) {
+                            return station;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Could not retrieve last station:', error);
+                }
+                return null;
+            }
+
+            restoreLastStation() {
+                if (this.lastStation) {
+                    this.stations[this.lastStation.stationuuid] = this.lastStation;
+                    this.currentStation = this.lastStation;
+
+                    this.updateNowPlaying(this.currentStation);
+                    document.getElementById('player-wrapper').classList.remove('hidden');
+                    document.getElementById('now-playing-subtext').textContent = 'Last played. Press play to resume.';
+                }
             }
 
             // Enhanced location detection with IP fallback
             async detectLocation() {
                 console.log('Starting location detection...');
-                
                 try {
-                    // Try geolocation first
                     if (navigator.geolocation) {
-                        try {
-                            const position = await new Promise((resolve, reject) => {
-                                navigator.geolocation.getCurrentPosition(
-                                    resolve,
-                                    reject,
-                                    { timeout: 10000, enableHighAccuracy: false }
-                                );
-                            });
-                            
-                            this.userLocation.latitude = position.coords.latitude;
-                            this.userLocation.longitude = position.coords.longitude;
-                            console.log('Geolocation success:', this.userLocation.latitude, this.userLocation.longitude);
-                            
-                            // Get country from coordinates
-                            const country = await this.getCountryFromCoordinates(
-                                position.coords.latitude, 
-                                position.coords.longitude
-                            );
-                            this.userLocation.country = country || '';
-                            console.log('Country from coordinates:', country);
-                            
-                            if (this.userLocation.country) {
-                                return; // Success with geolocation
-                            }
-                        } catch (geoError) {
-                            console.log('Geolocation failed:', geoError.message);
-                        }
+                        const position = await new Promise((resolve, reject) => {
+                            navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 8000, enableHighAccuracy: false });
+                        });
+                        this.userLocation.latitude = position.coords.latitude;
+                        this.userLocation.longitude = position.coords.longitude;
+                        const country = await this.getCountryFromCoordinates(position.coords.latitude, position.coords.longitude);
+                        this.userLocation.country = country || '';
+                        if (this.userLocation.country) return;
                     }
-                } catch (error) {
-                    console.log('Navigator geolocation not available');
+                } catch (geoError) {
+                    console.warn('Geolocation failed:', geoError.message);
                 }
 
-                // Fallback to IP-based location
                 console.log('Attempting IP-based location detection...');
                 try {
                     const ipLocation = await this.getLocationFromIP();
@@ -1054,69 +1190,40 @@
                         this.userLocation.country = ipLocation.country || '';
                         this.userLocation.latitude = ipLocation.latitude || null;
                         this.userLocation.longitude = ipLocation.longitude || null;
-                        console.log('IP location success:', ipLocation);
                     }
                 } catch (error) {
                     console.error('IP location detection failed:', error);
-                    // Set a default fallback
-                    console.log('Setting default location fallback');
-                    this.userLocation.country = '';
-                    this.userLocation.latitude = null;
-                    this.userLocation.longitude = null;
                 }
-                
-                console.log('Final location:', this.userLocation);
             }
 
             async getLocationFromIP() {
                 const apis = [
-                    {
-                        url: 'https://ipapi.co/json/',
-                        parse: data => ({
-                            country: data.country_name,
-                            latitude: data.latitude,
-                            longitude: data.longitude
-                        })
-                    },
-                    {
-                        url: 'http://ip-api.com/json/',
-                        parse: data => ({
-                            country: data.country,
-                            latitude: data.lat,
-                            longitude: data.lon
-                        })
-                    }
+                    { url: 'https://ipapi.co/json/', parse: data => ({ country: data.country_name, latitude: data.latitude, longitude: data.longitude }) },
+                    { url: 'https://ip-api.com/json/', parse: data => ({ country: data.country, latitude: data.lat, longitude: data.lon }) }
                 ];
-
                 for (const api of apis) {
                     try {
-                        const response = await fetch(api.url);
+                        const response = await fetch(api.url, { headers: { 'Accept': 'application/json' }});
+                        if (!response.ok) continue;
                         const data = await response.json();
                         return api.parse(data);
-                    } catch (error) {
-                        continue;
-                    }
+                    } catch (error) { continue; }
                 }
                 throw new Error('All IP location APIs failed');
             }
 
             async getCountryFromCoordinates(lat, lon) {
                 try {
-                    // Use a reverse geocoding service
                     const response = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
                     const data = await response.json();
                     return data.countryName;
-                } catch (error) {
-                    return null;
-                }
+                } catch (error) { return null; }
             }
 
             updateLocationIndicator() {
                 const indicator = document.getElementById('location-indicator');
-                const locationText = document.getElementById('location-text');
-                
                 if (this.userLocation.country) {
-                    locationText.textContent = this.userLocation.country;
+                    document.getElementById('location-text').textContent = this.userLocation.country;
                     indicator.style.display = 'block';
                 } else {
                     indicator.style.display = 'none';
@@ -1124,123 +1231,65 @@
             }
 
             setupEventListeners() {
-                // Category tabs
-                document.querySelectorAll('.category-tab').forEach(tab => {
-                    tab.addEventListener('click', (e) => {
-                        this.switchCategory(e.target.dataset.category);
-                    });
-                });
-
-                // Search functionality
+                document.querySelectorAll('.category-tab').forEach(tab => tab.addEventListener('click', (e) => this.switchCategory(e.target.dataset.category)));
+                
                 const searchBox = document.getElementById('search-box');
                 searchBox.addEventListener('input', (e) => {
                     clearTimeout(this.searchTimeout);
-                    this.searchTimeout = setTimeout(() => {
-                        this.handleSearch(e.target.value);
-                    }, 300);
+                    this.searchTimeout = setTimeout(() => this.handleSearch(e.target.value), 300);
                 });
 
-                // Player controls
                 document.getElementById('play-pause').addEventListener('click', () => this.togglePlayPause());
                 document.getElementById('stop-btn').addEventListener('click', () => this.stopAudio());
                 document.getElementById('eq-toggle').addEventListener('click', () => this.toggleEqualizer());
+                document.getElementById('volume-slider').addEventListener('input', (e) => this.setVolume(e.target.value));
 
-                // Volume control
-                document.getElementById('volume-slider').addEventListener('input', (e) => {
-                    this.setVolume(e.target.value);
-                });
-
-                // Audio events
                 this.audio.addEventListener('loadstart', () => this.showPlayerLoading(true));
                 this.audio.addEventListener('canplay', () => this.showPlayerLoading(false));
                 this.audio.addEventListener('error', () => this.handleAudioError());
+                this.audio.addEventListener('play', () => { this.isPlaying = true; this.showPlayerLoading(false); });
+                this.audio.addEventListener('pause', () => { this.isPlaying = false; this.showPlayerLoading(false); });
             }
 
-            // Calculate distance between two points using Haversine formula
             calculateDistance(lat1, lon1, lat2, lon2) {
                 if (!lat1 || !lon1 || !lat2 || !lon2) return Infinity;
-                
-                const R = 6371; // Earth's radius in kilometers
-                const dLat = this.toRad(lat2 - lat1);
-                const dLon = this.toRad(lon2 - lon1);
-                const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                         Math.cos(this.toRad(lat1)) * Math.cos(this.toRad(lat2)) *
-                         Math.sin(dLon/2) * Math.sin(dLon/2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-                return R * c; // Distance in kilometers
+                const R = 6371;
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
             }
 
-            toRad(value) {
-                return value * Math.PI / 180;
-            }
-
-            // Filter out unwanted stations
             filterStations(stations) {
                 return stations.filter(station => {
                     if (!station.name || !station.url) return false;
-                    
                     const name = (station.name || '').toLowerCase();
                     const country = (station.country || '').toLowerCase();
                     const tags = (station.tags || '').toLowerCase();
-                    
-                    // Only filter out Pakistani content if user is NOT in Pakistan
                     if (this.userLocation.country && this.userLocation.country.toLowerCase() !== 'pakistan') {
                         const unwantedTerms = ['pakistan', 'pak radio', 'islamabad', 'karachi', 'lahore'];
-                        
-                        const containsUnwantedContent = unwantedTerms.some(term => 
-                            name.includes(term) || 
-                            country.includes(term) || 
-                            tags.includes(term)
-                        );
-                        
-                        if (containsUnwantedContent) return false;
+                        if (unwantedTerms.some(term => name.includes(term) || country.includes(term) || tags.includes(term))) return false;
                     }
-                    
-                    // Filter out broken or empty URLs
                     if (!station.url || station.url.length < 5) return false;
-                    
                     return true;
                 });
             }
 
-            // Sort stations by distance from user location
             sortStationsByDistance(stations) {
-                if (!this.userLocation.latitude || !this.userLocation.longitude) {
-                    return stations;
-                }
-
+                if (!this.userLocation.latitude || !this.userLocation.longitude) return stations;
                 return stations.sort((a, b) => {
-                    const distanceA = this.calculateDistance(
-                        this.userLocation.latitude, 
-                        this.userLocation.longitude,
-                        parseFloat(a.geo_lat) || 0, 
-                        parseFloat(a.geo_long) || 0
-                    );
-                    const distanceB = this.calculateDistance(
-                        this.userLocation.latitude, 
-                        this.userLocation.longitude,
-                        parseFloat(b.geo_lat) || 0, 
-                        parseFloat(b.geo_long) || 0
-                    );
-
-                    // Prioritize stations with location data
-                    if (distanceA === Infinity && distanceB === Infinity) return 0;
-                    if (distanceA === Infinity) return 1;
-                    if (distanceB === Infinity) return -1;
-                    
+                    const distanceA = this.calculateDistance(this.userLocation.latitude, this.userLocation.longitude, parseFloat(a.geo_lat), parseFloat(a.geo_long));
+                    const distanceB = this.calculateDistance(this.userLocation.latitude, this.userLocation.longitude, parseFloat(b.geo_lat), parseFloat(b.geo_long));
                     return distanceA - distanceB;
                 });
             }
 
             async loadStations() {
                 try {
-                    // Only load local stations on page load
                     if (this.userLocation.country) {
                         await this.loadLocalStations();
                     } else {
-                        // Fallback to showing some stations if no location
                         await this.loadPopularStations();
-                        this.renderStations(this.stationsByCategory.popular.slice(0, 20), 'local-stations');
                     }
                     await this.loadStationsByCategory();
                 } catch (error) {
@@ -1248,229 +1297,56 @@
                 }
             }
 
-            async loadPopularStations() {
-                try {
-                    // Try to load popular stations first, then apply location sorting
-                    const response = await fetch('https://de1.api.radio-browser.info/json/stations/topvote/100');
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const stations = await response.json();
-                    console.log('Fetched stations:', stations.length);
-                    
-                    if (!Array.isArray(stations) || stations.length === 0) {
-                        throw new Error('No stations received from API');
-                    }
-                    
+            async fetchStations(url, containerId, categoryKey) {
+                 try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    let stations = await response.json();
+                    if (!Array.isArray(stations) || stations.length === 0) throw new Error('No stations received from API');
+
                     const filteredStations = this.filterStations(stations);
-                    console.log('Filtered stations:', filteredStations.length);
-                    
-                    const sortedStations = this.sortStationsByDistance(filteredStations).slice(0, 50);
-                    
-                    this.renderStations(sortedStations, 'popular-stations');
-                    this.stationsByCategory.popular = sortedStations;
-                    
+                    const sortedStations = this.sortStationsByDistance(filteredStations);
+
+                    this.stationsByCategory[categoryKey] = sortedStations;
+                    this.renderStations(sortedStations.slice(0, 40), containerId);
                 } catch (error) {
-                    console.error('Error loading stations:', error);
-                    // Fallback: try alternative API endpoint
-                    try {
-                        const fallbackResponse = await fetch('https://fr1.api.radio-browser.info/json/stations/topclick/50');
-                        if (fallbackResponse.ok) {
-                            const fallbackStations = await fallbackResponse.json();
-                            const filteredStations = this.filterStations(fallbackStations);
-                            const sortedStations = this.sortStationsByDistance(filteredStations);
-                            this.renderStations(sortedStations, 'popular-stations');
-                            this.stationsByCategory.popular = sortedStations;
-                        } else {
-                            throw new Error('Fallback API also failed');
-                        }
-                    } catch (fallbackError) {
-                        console.error('Fallback also failed:', fallbackError);
-                        this.showError('popular-stations', 'Unable to load radio stations. Please check your internet connection.');
-                    }
+                    console.error(`Error loading ${categoryKey} stations:`, error);
+                    this.showError(containerId, `Unable to load ${categoryKey} stations.`);
                 }
             }
 
-            async loadLocalStations() {
-                if (!this.userLocation.country) {
-                    console.log('No user country detected, skipping local stations');
-                    return;
-                }
-
-                try {
-                    console.log('Loading stations for country:', this.userLocation.country);
-                    const response = await fetch(`https://de1.api.radio-browser.info/json/stations/bycountry/${encodeURIComponent(this.userLocation.country)}`);
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const stations = await response.json();
-                    console.log('Country stations fetched:', stations.length);
-                    
-                    if (!Array.isArray(stations)) {
-                        throw new Error('Invalid response format');
-                    }
-                    
-                    const filteredStations = this.filterStations(stations);
-                    const sortedStations = this.sortStationsByDistance(filteredStations);
-                    const localStations = sortedStations.slice(0, 30);
-                    
-                    if (localStations.length > 0) {
-                        this.renderStations(localStations, 'local-stations');
-                        this.stationsByCategory.local = localStations;
-                        console.log('Local stations rendered:', localStations.length);
-                    } else {
-                        this.showError('local-stations', 'No stations found in your area');
-                    }
-                    
-                } catch (error) {
-                    console.error('Error loading local stations:', error);
-                    this.showError('local-stations', 'Unable to load local stations');
-                }
+            loadLocalStations() {
+                const countryCode = encodeURIComponent(this.userLocation.country);
+                return this.fetchStations(`https://de1.api.radio-browser.info/json/stations/bycountry/${countryCode}?limit=100&order=votes&reverse=true`, 'local-stations', 'local');
             }
-
-            async loadNearbyStations() {
-                if (!this.userLocation.latitude || !this.userLocation.longitude) {
-                    console.log('No user coordinates available, skipping nearby stations');
-                    return;
-                }
-
-                try {
-                    console.log('Loading nearby stations...');
-                    // Simplified approach - get stations and filter by distance
-                    const response = await fetch('https://de1.api.radio-browser.info/json/stations/topvote/100');
-                    
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    
-                    const stations = await response.json();
-                    console.log('Fetched stations for nearby filtering:', stations.length);
-
-                    // Filter stations with coordinates
-                    const stationsWithCoords = stations.filter(station => 
-                        station.geo_lat && station.geo_long && 
-                        parseFloat(station.geo_lat) !== 0 && parseFloat(station.geo_long) !== 0
-                    );
-                    
-                    console.log('Stations with coordinates:', stationsWithCoords.length);
-
-                    const filteredStations = this.filterStations(stationsWithCoords);
-                    const sortedStations = this.sortStationsByDistance(filteredStations);
-                    
-                    // Get closest stations within reasonable distance
-                    const nearbyStations = sortedStations
-                        .filter(station => {
-                            const distance = this.calculateDistance(
-                                this.userLocation.latitude, 
-                                this.userLocation.longitude,
-                                parseFloat(station.geo_lat), 
-                                parseFloat(station.geo_long)
-                            );
-                            return distance < 1000; // Within 1000km for broader coverage
-                        })
-                        .slice(0, 20);
-
-                    console.log('Nearby stations found:', nearbyStations.length);
-
-                    if (nearbyStations.length > 0) {
-                        this.renderStations(nearbyStations, 'nearby-stations');
-                        this.stationsByCategory.nearby = nearbyStations;
-                        console.log('Nearby stations rendered:', nearbyStations.length);
-                    } else {
-                        console.log('No nearby stations found, trying with broader search...');
-                        // Try with all stations if no nearby ones found
-                        const allFilteredStations = this.filterStations(stations);
-                        const broadStations = this.sortStationsByDistance(allFilteredStations).slice(0, 15);
-                        if (broadStations.length > 0) {
-                            this.renderStations(broadStations, 'nearby-stations');
-                            this.stationsByCategory.nearby = broadStations;
-                            console.log('Broader nearby stations rendered:', broadStations.length);
-                        } else {
-                            this.showError('nearby-stations', 'No nearby stations found');
-                        }
-                    }
-                    
-                } catch (error) {
-                    console.error('Error loading nearby stations:', error);
-                    this.showError('nearby-stations', 'Unable to load nearby stations');
-                }
+            
+            loadPopularStations() {
+                return this.fetchStations('https://de1.api.radio-browser.info/json/stations/topvote/100', 'local-stations', 'local');
             }
 
             async loadStationsByCategory() {
                 const categories = {
-                    pop: ['pop', 'pop music', 'top 40'],
-                    rock: ['rock', 'classic rock', 'alternative rock'],
-                    jazz: ['jazz', 'smooth jazz', 'jazz fusion'],
-                    classical: ['classical', 'classical music', 'orchestra'],
-                    news: ['news', 'news talk', 'talk news'],
-                    talk: ['talk', 'talk radio', 'spoken'],
-                    electronic: ['electronic', 'dance', 'edm', 'techno', 'house']
+                    pop: 'pop', rock: 'rock', jazz: 'jazz', classical: 'classical',
+                    news: 'news', talk: 'talk', electronic: 'electronic'
                 };
-
-                for (const [category, tags] of Object.entries(categories)) {
-                    try {
-                        let allStations = [];
-                        for (const tag of tags) {
-                            const response = await fetch(`https://de1.api.radio-browser.info/json/stations/bytag/${encodeURIComponent(tag)}`);
-                            const stations = await response.json();
-                            allStations = allStations.concat(stations);
-                        }
-                        
-                        // Remove duplicates, filter unwanted stations, and sort by distance
-                        const uniqueStations = allStations.filter((station, index, self) => 
-                            index === self.findIndex(s => s.stationuuid === station.stationuuid)
-                        );
-                        const filteredStations = this.filterStations(uniqueStations);
-                        const sortedStations = this.sortStationsByDistance(filteredStations).slice(0, 30);
-                        
-                        this.stationsByCategory[category] = sortedStations;
-                        this.renderStations(sortedStations, `${category}-stations`);
-                    } catch (error) {
-                        this.showError(`${category}-stations`, `Failed to load ${category} stations`);
-                    }
+                for (const [key, tag] of Object.entries(categories)) {
+                    await this.fetchStations(`https://de1.api.radio-browser.info/json/stations/bytag/${tag}?limit=50&order=votes&reverse=true`, `${key}-stations`, key);
                 }
             }
 
             switchCategory(category) {
-                // Update active tab
-                document.querySelectorAll('.category-tab').forEach(tab => {
-                    tab.classList.remove('active');
-                });
+                document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
                 document.querySelector(`[data-category="${category}"]`).classList.add('active');
-
-                // Show/hide sections
-                document.querySelectorAll('.station-section').forEach(section => {
-                    section.style.display = 'none';
-                });
+                document.querySelectorAll('.station-section').forEach(section => section.style.display = 'none');
 
                 this.currentCategory = category;
 
                 if (category === 'all') {
-                    document.querySelectorAll('.station-section').forEach(section => {
-                        if (!section.id.includes('search-results')) {
-                            section.style.display = 'block';
-                        }
-                    });
+                    document.querySelectorAll('.station-section:not(#search-results)').forEach(section => section.style.display = 'block');
                 } else {
-                    let sectionId;
-                    if (category === 'local') {
-                        sectionId = 'local-section';
-                    } else if (category === 'nearby') {
-                        sectionId = 'nearby-section';
-                    } else {
-                        sectionId = `${category}-section`;
-                    }
-                    const section = document.getElementById(sectionId);
-                    if (section) {
-                        section.style.display = 'block';
-                    }
+                    const section = document.getElementById(`${category}-section`);
+                    if (section) section.style.display = 'block';
                 }
-
-                // Hide search results when switching categories
                 document.getElementById('search-results').style.display = 'none';
             }
 
@@ -1480,21 +1356,15 @@
                     this.switchCategory(this.currentCategory);
                     return;
                 }
-
                 try {
-                    const response = await fetch(`https://de1.api.radio-browser.info/json/stations/byname/${encodeURIComponent(query)}`);
+                    const response = await fetch(`https://de1.api.radio-browser.info/json/stations/byname/${encodeURIComponent(query)}?limit=50`);
                     const stations = await response.json();
                     const filteredStations = this.filterStations(stations);
                     const sortedStations = this.sortStationsByDistance(filteredStations);
                     
-                    this.renderStations(sortedStations.slice(0, 20), 'search-stations');
-                    
-                    // Show search results
-                    document.querySelectorAll('.station-section').forEach(section => {
-                        section.style.display = 'none';
-                    });
+                    this.renderStations(sortedStations, 'search-stations');
+                    document.querySelectorAll('.station-section').forEach(section => section.style.display = 'none');
                     document.getElementById('search-results').style.display = 'block';
-                    
                 } catch (error) {
                     this.showError('search-stations', 'Search failed');
                 }
@@ -1503,38 +1373,24 @@
             renderStations(stations, containerId) {
                 const container = document.getElementById(containerId);
                 if (!container) return;
-
                 if (stations.length === 0) {
-                    container.innerHTML = '<div class="error">No stations found</div>';
+                    container.innerHTML = `<div class="info" style="padding:20px; text-align:center; color: var(--secondary-text);">No stations found for this category.</div>`;
                     return;
                 }
-
                 container.innerHTML = stations.map((station, index) => {
                     const favicon = station.favicon || this.getDefaultIcon();
-                    const country = station.country || '🌍';
+                    const country = station.country || 'Worldwide';
                     const tags = station.tags ? station.tags.split(',').slice(0, 2).join(', ') : '';
-                    
-                    // Calculate and display distance for nearby stations
                     let distanceText = '';
-                    if (this.userLocation.latitude && this.userLocation.longitude && station.geo_lat && station.geo_long) {
-                        const distance = this.calculateDistance(
-                            this.userLocation.latitude, 
-                            this.userLocation.longitude,
-                            parseFloat(station.geo_lat), 
-                            parseFloat(station.geo_long)
-                        );
-                        if (distance < 1000) { // Show distance only if under 1000km
-                            distanceText = `<div class="distance">${Math.round(distance)} km away</div>`;
-                        }
+                    if (this.userLocation.latitude && station.geo_lat) {
+                        const distance = this.calculateDistance(this.userLocation.latitude, this.userLocation.longitude, parseFloat(station.geo_lat), parseFloat(station.geo_long));
+                        if (distance < 1000) distanceText = `<div class="distance">${Math.round(distance)} km away</div>`;
                     }
-
-                    // Add priority indicator for closest stations
-                    const priorityBadge = index < 3 && containerId.includes('local') || containerId.includes('nearby') ? 
-                        '<div class="priority-badge">📍</div>' : '';
+                    const priorityBadge = index < 3 && (containerId.includes('local') || containerId.includes('nearby')) ? '<div class="priority-badge">📍</div>' : '';
                     
                     return `
-                        <div class="station-card" onclick="radioApp.playStation('${station.stationuuid}')" 
-                             style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${favicon}')">
+                        <div class="station-card" onclick="window.radioApp.playStation('${station.stationuuid}')" 
+                             style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.7)), url('${favicon.replace(/'/g, "\\'")}');">
                             ${priorityBadge}
                             <div class="info">
                                 <div class="name">${this.escapeHtml(station.name)}</div>
@@ -1542,14 +1398,9 @@
                                 ${tags ? `<div class="genre">${this.escapeHtml(tags)}</div>` : ''}
                                 ${distanceText}
                             </div>
-                        </div>
-                    `;
+                        </div>`;
                 }).join('');
-
-                // Store stations for playback
-                stations.forEach(station => {
-                    this.stations[station.stationuuid] = station;
-                });
+                stations.forEach(station => { this.stations[station.stationuuid] = station; });
             }
 
             getDefaultIcon() {
@@ -1560,114 +1411,89 @@
                 const station = this.stations[stationId];
                 if (!station) return;
 
-                try {
-                    // Record click
-                    fetch(`https://de1.api.radio-browser.info/json/url/${stationId}`, { method: 'POST' }).catch(() => {});
+                document.getElementById('player-wrapper').classList.remove('hidden');
+                this.showPlayerLoading(true);
 
+                try {
+                    fetch(`https://de1.api.radio-browser.info/json/url/${stationId}`, { method: 'POST' }).catch(() => {});
                     this.currentStation = station;
                     this.audio.src = station.url_resolved || station.url;
-                    
-                    // Update UI
                     this.updateNowPlaying(station);
-                    document.getElementById('player-wrapper').style.display = 'block';
-                    
-                    // Play audio
+                    this.saveLastStation(station);
                     await this.audio.play();
-                    this.isPlaying = true;
-                    document.getElementById('play-pause').textContent = '⏸️';
-                    
                 } catch (error) {
+                    console.error("Playback error in playStation:", error);
                     this.handleAudioError();
                 }
             }
 
             updateNowPlaying(station) {
                 document.getElementById('now-playing-text').textContent = station.name;
+                const subtext = [station.country, (station.tags || '').split(',')[0]].filter(Boolean).join(' - ');
+                document.getElementById('now-playing-subtext').textContent = subtext || 'Streaming Live';
                 const logo = document.getElementById('station-logo');
                 logo.src = station.favicon || this.getDefaultIcon();
-                logo.classList.add('playing');
+                logo.onerror = () => { logo.src = this.getDefaultIcon(); };
             }
-
+            
             togglePlayPause() {
                 if (!this.currentStation) return;
-
-                const playIcon = document.getElementById('play-icon');
-                const pauseIcon = document.getElementById('pause-icon');
-
                 if (this.isPlaying) {
                     this.audio.pause();
-                    this.isPlaying = false;
-                    playIcon.style.display = 'block';
-                    pauseIcon.style.display = 'none';
-                    document.getElementById('station-logo').classList.remove('playing');
                 } else {
-                    this.audio.play().then(() => {
-                        this.isPlaying = true;
-                        playIcon.style.display = 'none';
-                        pauseIcon.style.display = 'block';
-                        document.getElementById('station-logo').classList.add('playing');
-                    }).catch(() => this.handleAudioError());
+                    if (!this.audio.src) this.audio.src = this.currentStation.url_resolved || this.currentStation.url;
+                    this.audio.play().catch(e => this.handleAudioError(e));
                 }
             }
 
             stopAudio() {
                 this.audio.pause();
-                this.audio.currentTime = 0;
-                this.isPlaying = false;
-                document.getElementById('play-pause').textContent = '▶️';
-                document.getElementById('station-logo').classList.remove('playing');
-                document.getElementById('now-playing-text').textContent = 'Select a station to start listening';
-                document.getElementById('player-wrapper').style.display = 'none';
+                this.audio.src = '';
                 this.currentStation = null;
-            }
-
-            toggleMute() {
-                const volumeOnIcon = document.getElementById('volume-on-icon');
-                const volumeOffIcon = document.getElementById('volume-off-icon');
-                
-                if (this.isMuted) {
-                    this.audio.muted = false;
-                    this.isMuted = false;
-                    volumeOnIcon.style.display = 'block';
-                    volumeOffIcon.style.display = 'none';
-                } else {
-                    this.audio.muted = true;
-                    this.isMuted = true;
-                    volumeOnIcon.style.display = 'none';
-                    volumeOffIcon.style.display = 'block';
-                }
+                this.isPlaying = false;
+                document.getElementById('player-wrapper').classList.add('hidden');
             }
 
             setVolume(value) {
-                this.audio.volume = value / 100;
+                this.audio.volume = value;
             }
 
             toggleEqualizer() {
                 const eq = document.getElementById('equalizer-container');
-                eq.style.display = eq.style.display === 'none' ? 'block' : 'none';
+                eq.style.display = eq.style.display === 'block' ? 'none' : 'block';
             }
-
+            
             showPlayerLoading(show) {
                 const playBtn = document.getElementById('play-pause');
-                playBtn.textContent = show ? '⏳' : (this.isPlaying ? '⏸️' : '▶️');
-            }
-
-            handleAudioError() {
-                this.showPlayerLoading(false);
-                document.getElementById('now-playing-text').textContent = 'Error playing station';
-                document.getElementById('play-pause').textContent = '❌';
-                setTimeout(() => {
-                    if (this.currentStation) {
-                        document.getElementById('play-pause').textContent = '▶️';
+                const playIcon = document.getElementById('play-icon');
+                const pauseIcon = document.getElementById('pause-icon');
+                const logo = document.getElementById('station-logo');
+                
+                playBtn.disabled = show;
+                if (show) {
+                    playBtn.classList.add('loading');
+                } else {
+                    playBtn.classList.remove('loading');
+                    if (this.isPlaying) {
+                        playIcon.style.display = 'none';
+                        pauseIcon.style.display = 'block';
+                        logo.classList.add('playing');
+                    } else {
+                        playIcon.style.display = 'block';
+                        pauseIcon.style.display = 'none';
+                        logo.classList.remove('playing');
                     }
-                }, 2000);
+                }
             }
 
-            showError(containerId, message) {
-                const container = document.getElementById(containerId);
-                if (container) {
-                    container.innerHTML = `<div class="error">${message}</div>`;
-                }
+            handleAudioError(e) {
+                console.error("Audio Error:", e);
+                this.isPlaying = false;
+                this.showPlayerLoading(false);
+                document.getElementById('now-playing-subtext').textContent = 'Error: Could not play station.';
+                const playBtn = document.getElementById('play-pause');
+                playBtn.style.background = 'var(--error-color)';
+                setTimeout(() => { playBtn.style.background = ''; }, 3000);
             }
 
             escapeHtml(text) {
@@ -1677,25 +1503,14 @@
             }
         }
 
-        // Initialize the app
-        const radioApp = new RadioApp();
-
-        // Handle page visibility change to pause audio when tab is hidden
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden && radioApp.isPlaying) {
-                // Optional: pause when tab is hidden
-                // radioApp.togglePlayPause();
+        document.addEventListener('DOMContentLoaded', () => {
+            window.radioApp = new RadioApp();
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/sw.js').catch(() => {});
+                });
             }
         });
-
-        // Service Worker registration for PWA features (optional)
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').catch(() => {
-                    // Service worker registration failed, but app still works
-                });
-            });
-        }
     </script>
 </body>
 </html>

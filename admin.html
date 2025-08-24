@@ -12,8 +12,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Supabase Client Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             --primary-glow: #00aaff;
@@ -221,69 +219,62 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // --- Supabase Integration ---
-        const supabaseUrl = 'https://rlphpouduqrapqjwpjxi.supabase.co';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJscGhwb3VkdXFyYXBxandwanhpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU5Njc0NjIsImV4cCI6MjA3MTU0MzQ2Mn0.BN4BtzbgaDrFaUFa7mGQDh1q7yMyoJvbHxzw-50hOro';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
+        // --- IndexedDB Helper ---
         const propertyDB = {
-            async getAll() {
-                const { data, error } = await supabase.from('properties').select('*');
-                if (error) {
-                    console.error('Error fetching properties:', error);
-                    return [];
-                }
-                return data;
+            db: null,
+            init: function() {
+                return new Promise((resolve, reject) => {
+                    if (this.db) return resolve();
+                    const request = indexedDB.open('mohsinEstateDB', 1);
+                    request.onerror = (e) => reject("DB Error: " + e.target.errorCode);
+                    request.onsuccess = (e) => { this.db = e.target.result; resolve(); };
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains('properties')) {
+                            db.createObjectStore('properties', { keyPath: 'id' });
+                        }
+                    };
+                });
             },
-            async getById(id) {
-                const { data, error } = await supabase.from('properties').select('*').eq('id', id).single();
-                if (error) {
-                    console.error('Error fetching property by ID:', error);
-                    return null;
-                }
-                return data;
+            async getAll() {
+                await this.init();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction('properties', 'readonly');
+                    const store = transaction.objectStore('properties');
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (e) => reject(e.target.error);
+                });
             },
             async put(property) {
-                // 'upsert' will insert if 'id' doesn't exist, or update if it does.
-                const { error } = await supabase.from('properties').upsert(property);
-                if (error) console.error('Error saving property:', error);
+                await this.init();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction('properties', 'readwrite');
+                    const store = transaction.objectStore('properties');
+                    const request = store.put(property);
+                    request.onsuccess = () => resolve();
+                    request.onerror = (e) => reject(e.target.error);
+                });
             },
             async delete(id) {
-                // First, get the property to find media files to delete from Storage
-                const propToDelete = await this.getById(id);
-                if (propToDelete) {
-                    const filesToDelete = [];
-                    if (propToDelete.images && propToDelete.images.length > 0) {
-                        propToDelete.images.forEach(url => filesToDelete.push(url.split('/').pop()));
-                    }
-                    if (propToDelete.video) {
-                        filesToDelete.push(propToDelete.video.split('/').pop());
-                    }
-
-                    if (filesToDelete.length > 0) {
-                        const { error: storageError } = await supabase.storage.from('property-media').remove(filesToDelete);
-                        if (storageError) console.error('Error deleting files from storage:', storageError);
-                    }
-                }
-                
-                // Then, delete the record from the database
-                const { error } = await supabase.from('properties').delete().eq('id', id);
-                if (error) console.error('Error deleting property record:', error);
+                await this.init();
+                return new Promise((resolve, reject) => {
+                    const transaction = this.db.transaction('properties', 'readwrite');
+                    const store = transaction.objectStore('properties');
+                    const request = store.delete(id);
+                    request.onsuccess = () => resolve();
+                    request.onerror = (e) => reject(e.target.error);
+                });
             }
         };
 
         // --- Global Helper Functions ---
-        async function uploadFile(file, ownerId) {
-            const fileName = `${ownerId}-${Date.now()}-${file.name}`;
-            const { error } = await supabase.storage.from('property-media').upload(fileName, file);
-            if (error) {
-                console.error('Error uploading file:', error);
-                return null;
-            }
-            const { data } = supabase.storage.from('property-media').getPublicUrl(fileName);
-            return data.publicUrl;
-        }
-
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
 
         window.deleteProperty = async function(id) {
             if (confirm('Are you sure you want to permanently delete this property?')) {
@@ -376,50 +367,44 @@
             if (currentUser) showMainContent(); else showLoginView();
             userLoginForm.addEventListener('submit', e => { e.preventDefault(); const mobile = document.getElementById('mobileNumber').value; if(mobile){ sessionStorage.setItem('currentUser', mobile); currentUser = mobile; showMainContent(); } });
             logoutBtn.addEventListener('click', () => { sessionStorage.removeItem('currentUser'); currentUser = null; showLoginView(); });
-            deleteAccountBtn.addEventListener('click', async () => { if (confirm('Are you sure? This will delete your account and all listings.')) { let all = await propertyDB.getAll(); for(const prop of all.filter(p=>p.userId === currentUser)) { await propertyDB.delete(prop.id); } sessionStorage.removeItem('currentUser'); currentUser = null; alert('Account deleted.'); showLoginView(); } });
+            deleteAccountBtn.addEventListener('click', async () => { if (confirm('Are you sure? This will delete your account and all listings.')) { let all = await propertyDB.getAll(); let remaining = all.filter(p => p.userId !== currentUser); for(const prop of all.filter(p=>p.userId === currentUser)) { await propertyDB.delete(prop.id); } sessionStorage.removeItem('currentUser'); currentUser = null; alert('Account deleted.'); showLoginView(); } });
             
             function showLoginView() { loginView.classList.remove('d-none'); mainContentView.classList.add('d-none'); logoutBtn.classList.add('d-none'); }
             async function showMainContent() { loginView.classList.add('d-none'); mainContentView.classList.remove('d-none'); logoutBtn.classList.remove('d-none'); await loadUserProperties(); }
 
             userPropertyForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                document.querySelector('#user-property-form button[type="submit"]').disabled = true;
-                document.querySelector('#user-property-form button[type="submit"]').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
-
                 const propertyId = document.getElementById('propertyId').value;
                 const imageFiles = userImageUploader.getFiles();
                 const videoFile = document.getElementById('userPropertyVideo').files[0];
 
                 if (!propertyId && imageFiles.length === 0) {
                     alert('At least one image is required for a new property.');
-                    document.querySelector('#user-property-form button[type="submit"]').disabled = false;
-                    document.querySelector('#user-property-form button[type="submit"]').innerHTML = '<i class="fas fa-save me-2"></i>Save Property';
                     return;
                 }
                 
-                const imageUploadPromises = imageFiles.map(file => uploadFile(file, currentUser));
-                const videoUploadPromise = videoFile ? uploadFile(videoFile, currentUser) : Promise.resolve(null);
-                const [imageUrl, videoUrl] = await Promise.all([Promise.all(imageUploadPromises), videoUploadPromise]);
+                const imagePromises = imageFiles.map(file => toBase64(file));
+                const videoPromise = videoFile ? toBase64(videoFile) : Promise.resolve(null);
+                const [imagesBase64, videoBase64] = await Promise.all([Promise.all(imagePromises), videoPromise]);
                 
                 let property;
                 if (propertyId) { // Editing
-                    property = await propertyDB.getById(Number(propertyId));
-                    if(!property) return;
+                    const allProperties = await propertyDB.getAll();
+                    property = allProperties.find(p => p.id == propertyId);
+                    if(!property) return; // safety check
                     updatePropertyData(property);
-                    if(imageUrl.length > 0) property.images = imageUrl;
-                    if(videoUrl) property.video = videoUrl;
+                    if(imagesBase64.length > 0) property.images = imagesBase64;
+                    if(videoFile) property.video = videoBase64;
                 } else { // Adding new
                     property = { id: Date.now(), userId: currentUser };
                     updatePropertyData(property);
-                    property.images = imageUrl;
-                    property.video = videoUrl;
+                    property.images = imagesBase64;
+                    property.video = videoBase64;
                 }
                 
                 await propertyDB.put(property);
                 resetUserForm();
                 await loadUserProperties();
-                document.querySelector('#user-property-form button[type="submit"]').disabled = false;
-                document.querySelector('#user-property-form button[type="submit"]').innerHTML = '<i class="fas fa-save me-2"></i>Save Property';
             });
             
             function updatePropertyData(p) { p.title = document.getElementById('userPropertyTitle').value; p.location = document.getElementById('userPropertyLocation').value; p.status = document.getElementById('userPropertyStatus').value; p.beds = document.getElementById('userPropertyBeds').value; p.baths = document.getElementById('userPropertyBaths').value; p.area = document.getElementById('userPropertyArea').value; p.price = document.getElementById('userPropertyPrice').value; }
@@ -438,16 +423,11 @@
             }
             
             window.editProperty = async function(id) {
-                const p = await propertyDB.getById(id);
+                const all = await propertyDB.getAll();
+                const p = all.find(p => p.id === id);
                 if (p) {
                     formTitle.innerHTML = '<i class="fas fa-edit me-2"></i>Edit Property';
-                    document.getElementById('userPropertyTitle').value = p.title || '';
-                    document.getElementById('userPropertyLocation').value = p.location || '';
-                    document.getElementById('userPropertyStatus').value = p.status || 'For Sale';
-                    document.getElementById('userPropertyBeds').value = p.beds || '';
-                    document.getElementById('userPropertyBaths').value = p.baths || '';
-                    document.getElementById('userPropertyArea').value = p.area || '';
-                    document.getElementById('userPropertyPrice').value = p.price || '';
+                    Object.keys(p).forEach(key => { const el = document.getElementById('userProperty' + key.charAt(0).toUpperCase() + key.slice(1)); if(el) el.value = p[key]; });
                     document.getElementById('propertyId').value = p.id;
                     cancelEditBtn.classList.remove('d-none');
                     resetUserFormMedia();
@@ -473,32 +453,12 @@
 
             adminPropertyForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
-                document.querySelector('#admin-property-form button[type="submit"]').disabled = true;
-                document.querySelector('#admin-property-form button[type="submit"]').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
-
                 const imageFiles = adminImageUploader.getFiles();
-                if (imageFiles.length === 0) { 
-                    alert('At least one image is required.'); 
-                    document.querySelector('#admin-property-form button[type="submit"]').disabled = false;
-                    document.querySelector('#admin-property-form button[type="submit"]').innerHTML = '<i class="fas fa-save me-2"></i>Save Property';
-                    return; 
-                }
+                if (imageFiles.length === 0) { alert('At least one image is required.'); return; }
                 const videoFile = document.getElementById('adminPropertyVideo').files[0];
-                const [imageUrls, videoUrl] = await Promise.all([Promise.all(imageFiles.map(f => uploadFile(f, 'admin'))), videoFile ? uploadFile(videoFile, 'admin') : null]);
+                const [imagesBase64, videoBase64] = await Promise.all([Promise.all(imageFiles.map(toBase64)), videoFile ? toBase64(videoFile) : null]);
                 
-                const property = { 
-                    id: Date.now(), 
-                    userId: 'admin', 
-                    images: imageUrls.filter(url => url !== null), // Filter out failed uploads
-                    video: videoUrl, 
-                    title: document.getElementById('adminPropertyTitle').value, 
-                    location: document.getElementById('adminPropertyLocation').value, 
-                    status: document.getElementById('adminPropertyStatus').value, 
-                    beds: document.getElementById('adminPropertyBeds').value, 
-                    baths: document.getElementById('adminPropertyBaths').value, 
-                    area: document.getElementById('adminPropertyArea').value, 
-                    price: document.getElementById('adminPropertyPrice').value 
-                };
+                const property = { id: Date.now(), userId: 'admin', images: imagesBase64, video: videoBase64, title: document.getElementById('adminPropertyTitle').value, location: document.getElementById('adminPropertyLocation').value, status: document.getElementById('adminPropertyStatus').value, beds: document.getElementById('adminPropertyBeds').value, baths: document.getElementById('adminPropertyBaths').value, area: document.getElementById('adminPropertyArea').value, price: document.getElementById('adminPropertyPrice').value };
                 
                 await propertyDB.put(property);
                 adminPropertyForm.reset();
@@ -506,8 +466,6 @@
                 document.getElementById('admin-video-preview').innerHTML = '';
                 await loadAdminProperties();
                 if (document.querySelector('#check-user.active')) await loadAllProperties();
-                document.querySelector('#admin-property-form button[type="submit"]').disabled = false;
-                document.querySelector('#admin-property-form button[type="submit"]').innerHTML = '<i class="fas fa-save me-2"></i>Save Property';
             });
 
             window.loadAdminProperties = async function() {
